@@ -1,0 +1,4 @@
+- hosts: docker2c
+  become: yes
+  roles:
+  - lighttpd

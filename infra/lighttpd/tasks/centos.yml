@@ -1,0 +1,5 @@
+# Tarefas específicas do CentOS
+- name: Garantindo o epel-release em CentOS
+  package:
+    name: epel-release
+    state: present
