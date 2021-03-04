@@ -36,6 +36,11 @@
     - /srv/www/html
     - /var/cache/lighttpd
     - /var/logs/lighttpd
+  - name: Criando proxy.conf
+    file:
+      path: /etc/lighttpd/proxy.conf
+      state: touch
+      access_time: preserve
   - name: Garantindo configurações de proxy
     blockinfile:
       path: /etc/lighttpd/proxy.conf
