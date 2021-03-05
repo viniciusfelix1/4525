@@ -1,7 +1,7 @@
 node {
     def servers = [100,200]
     def server = servers[new Random().nextInt(servers.size())]
-    def img = 'docker.io/viniciusfelix1/php-app'
+    def img = 'viniciusfelix1/php-login'
     def parameters = [
         '--restart always',
         "--name ${JOB_BASE_NAME}",
@@ -36,11 +36,18 @@ node {
                     error("Login falhou!")
                 }
             }
+            stage('Save') {
+                docker.withRegistry('https://index.docker.io/v1/', 'dockerregistry') {
+                    docker.image(img).push()
+                }
+            }
         }
         stage('Deploy') {
             servers.each {
                 docker.withServer("172.27.11.${it}:2375") {
-                    docker.image(img).pull()
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerregistry') {
+                        docker.image(img).pull()
+                    }
                     sh "docker network create --subnet 192.168.10.0/24 ${JOB_BASE_NAME} || /bin/true"
                     sh "docker rm -f ${JOB_BASE_NAME} || /bin/true"
                     docker.image(img).run(parameters.join(' '))

@@ -2,20 +2,18 @@ version: '3.3'
 
 services:
    mysql:
-     image: mysql
-     command: --default-authentication-plugin=mysql_native_password
+     image: mariadb
      environment:
        MYSQL_ROOT_PASSWORD: Abc123!
        MYSQL_DATABASE: php
        MYSQL_USER: php
        MYSQL_PASSWORD: 4linux
-
+   memcached:
+     image: memcached:alpine
    app:
      depends_on:
      - mysql
-     image: php-ms
-     ports:
-     - "8080:8080"
+     image: viniciusfelix1/php-login
      environment:
        DB_HOST: mysql
        DB_PORT: 3306

@@ -2,6 +2,9 @@
 
 Este diretório armazena os passos e arquivos para a criação da pipeline final do Curso 525 da 4Linux.
 
+## Requerimentos
+Para essa última pipeline, é necessário que você possua uma conta no [Docker HUB](https://hub.docker.com/).
+
 ## Aplicação PHP
 A aplicação foi clonada do repositório `https://github.com/4linux/4542-php`
 
@@ -47,3 +50,49 @@ Neste ponto, vamos precisar adicionar a chave pública do Jenkins dentro do Gite
 
 - Credentials: jenkins
 - Script Path: jenkins/Jenkinsfile.groovy
+- Save
+
+Com isso temos o esqueleto para nossa pipeline.
+
+### Ajustes no docker-compose.yml
+
+Será necessário relizar alguns ajustes no docker-compose.yml para subirmos nosso ambiente de teste.
+
+A primeira alteração é trocar a imagem do banco, de "mysql" para "mariadb". Como alteramos a imagem, podemos remover a linha "command".
+
+A próxima alteração é trocar a imagem do serviço "app" para o nome que daremos através do Jenkinsfile. Não será necessário termos as portas mapeadas para o container, então podemos remover esta configuração.
+
+O docker-compose.yml de testes, ficará da seguinte forma:
+
+```yaml
+version: '3.3'
+services:
+   mysql:
+     image: mariadb
+     environment:
+       MYSQL_ROOT_PASSWORD: Abc123!
+       MYSQL_DATABASE: php
+       MYSQL_USER: php
+       MYSQL_PASSWORD: 4linux
+   memcached:
+     image: memcached:alpine
+   app:
+     depends_on:
+     - mysql
+     image: IMAGEM
+     environment:
+       DB_HOST: mysql
+       DB_PORT: 3306
+       DB_USER: php
+       DB_PASS: 4linux
+       DB_NAME: php
+```
+
+E por fim, podemos criar uma nova branch onde teremos esta aplicação.
+
+```bash
+git checkout -b dev
+git add .
+git commit -m "Modificado docker-compose.yml"
+git push origin dev
+```
